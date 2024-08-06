@@ -1,0 +1,2295 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<PMML xmlns="http://www.dmg.org/PMML-4_3" xmlns:data="http://jpmml.org/jpmml-model/InlineTable" version="4.3">
+	<Header>
+		<Application name="JPMML-SkLearn" version="1.5.35"/>
+		<Timestamp>2020-04-26T08:39:41Z</Timestamp>
+	</Header>
+	<MiningBuildTask>
+		<Extension>PMMLPipeline(steps=[('mapper', DataFrameMapper(default=False, df_out=False,
+                features=[(array(['A', 'D'], dtype=object),
+                           [SimpleImputer(add_indicator=False, copy=True,
+                                          fill_value=None, missing_values=nan,
+                                          strategy='median', verbose=0),
+                            StandardScaler(copy=True, with_mean=True,
+                                           with_std=True)])],
+                input_df=False, sparse=False)),
+       ('pca', PCA(copy=True, iterated_power='auto', n_components=1, random_state=None,
+    svd_solver='auto', tol=0.0, whiten=False)),
+       ('classifier', RandomForestClassifier(bootstrap=True, ccp_alpha=0.0, class_weight=None,
+                       criterion='gini', max_depth=3, max_features='auto',
+                       max_leaf_nodes=None, max_samples=None,
+                       min_impurity_decrease=0.0, min_impurity_split=None,
+                       min_samples_leaf=1, min_samples_split=2,
+                       min_weight_fraction_leaf=0.0, n_estimators=50,
+                       n_jobs=None, oob_score=False, random_state=None,
+                       verbose=0, warm_start=False))])</Extension>
+	</MiningBuildTask>
+	<DataDictionary>
+		<DataField name="Class" optype="categorical" dataType="integer">
+			<Value value="1"/>
+			<Value value="2"/>
+			<Value value="3"/>
+		</DataField>
+		<DataField name="A" optype="continuous" dataType="double"/>
+		<DataField name="D" optype="continuous" dataType="double"/>
+	</DataDictionary>
+	<TransformationDictionary/>
+	<MiningModel functionName="classification">
+		<MiningSchema>
+			<MiningField name="Class" usageType="target"/>
+			<MiningField name="A" missingValueReplacement="-6.043284509057811" missingValueTreatment="asMedian"/>
+			<MiningField name="D" missingValueReplacement="-2.683514100157982" missingValueTreatment="asMedian"/>
+		</MiningSchema>
+		<Output>
+			<OutputField name="probability(1)" optype="continuous" dataType="double" feature="probability" value="1"/>
+			<OutputField name="probability(2)" optype="continuous" dataType="double" feature="probability" value="2"/>
+			<OutputField name="probability(3)" optype="continuous" dataType="double" feature="probability" value="3"/>
+		</Output>
+		<LocalTransformations>
+			<DerivedField name="standard_scaler(A)" optype="continuous" dataType="double">
+				<Apply function="/">
+					<Apply function="-">
+						<FieldRef field="A"/>
+						<Constant dataType="double">-0.562612253623763</Constant>
+					</Apply>
+					<Constant dataType="double">24.34550532766845</Constant>
+				</Apply>
+			</DerivedField>
+			<DerivedField name="standard_scaler(D)" optype="continuous" dataType="double">
+				<Apply function="/">
+					<Apply function="-">
+						<FieldRef field="D"/>
+						<Constant dataType="double">-1.2988876179003435</Constant>
+					</Apply>
+					<Constant dataType="double">6.856527663216653</Constant>
+				</Apply>
+			</DerivedField>
+			<DerivedField name="pca@1[0]" optype="continuous" dataType="double">
+				<Apply function="sum">
+					<Apply function="*">
+						<Apply function="-">
+							<FieldRef field="standard_scaler(A)"/>
+							<Constant dataType="double">-3.476034275233057E-17</Constant>
+						</Apply>
+						<Constant dataType="double">0.7071067811865488</Constant>
+					</Apply>
+					<Apply function="*">
+						<Apply function="-">
+							<FieldRef field="standard_scaler(D)"/>
+							<Constant dataType="double">-2.871776890363738E-17</Constant>
+						</Apply>
+						<Constant dataType="double">-0.7071067811865461</Constant>
+					</Apply>
+				</Apply>
+			</DerivedField>
+			<DerivedField name="float(pca@1[0])" optype="continuous" dataType="float">
+				<FieldRef field="pca@1[0]"/>
+			</DerivedField>
+			<DerivedField name="double(float(pca@1[0]))" optype="continuous" dataType="double">
+				<FieldRef field="float(pca@1[0])"/>
+			</DerivedField>
+		</LocalTransformations>
+		<Segmentation multipleModelMethod="average">
+			<Segment id="1">
+				<True/>
+				<TreeModel functionName="classification" missingValueStrategy="nullPrediction">
+					<MiningSchema>
+						<MiningField name="double(float(pca@1[0]))"/>
+					</MiningSchema>
+					<Node>
+						<True/>
+						<Node score="2" recordCount="600256.0">
+							<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="-0.15407787822186947"/>
+							<ScoreDistribution value="1" recordCount="0.0"/>
+							<ScoreDistribution value="2" recordCount="600256.0"/>
+							<ScoreDistribution value="3" recordCount="0.0"/>
+						</Node>
+						<Node>
+							<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="1.105285108089447"/>
+							<Node score="1" recordCount="79852.0">
+								<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="1.0388299822807312"/>
+								<ScoreDistribution value="1" recordCount="77941.0"/>
+								<ScoreDistribution value="2" recordCount="0.0"/>
+								<ScoreDistribution value="3" recordCount="1911.0"/>
+							</Node>
+							<Node score="1" recordCount="26789.0">
+								<True/>
+								<ScoreDistribution value="1" recordCount="18800.0"/>
+								<ScoreDistribution value="2" recordCount="0.0"/>
+								<ScoreDistribution value="3" recordCount="7989.0"/>
+							</Node>
+						</Node>
+						<Node score="3" recordCount="479711.0">
+							<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="1.5632707476615906"/>
+							<ScoreDistribution value="1" recordCount="92715.0"/>
+							<ScoreDistribution value="2" recordCount="0.0"/>
+							<ScoreDistribution value="3" recordCount="386996.0"/>
+						</Node>
+						<Node score="1" recordCount="13392.0">
+							<True/>
+							<ScoreDistribution value="1" recordCount="10451.0"/>
+							<ScoreDistribution value="2" recordCount="0.0"/>
+							<ScoreDistribution value="3" recordCount="2941.0"/>
+						</Node>
+					</Node>
+				</TreeModel>
+			</Segment>
+			<Segment id="2">
+				<True/>
+				<TreeModel functionName="classification" missingValueStrategy="nullPrediction">
+					<MiningSchema>
+						<MiningField name="double(float(pca@1[0]))"/>
+					</MiningSchema>
+					<Node>
+						<True/>
+						<Node score="2" recordCount="599744.0">
+							<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="-0.1210463719908148"/>
+							<ScoreDistribution value="1" recordCount="0.0"/>
+							<ScoreDistribution value="2" recordCount="599744.0"/>
+							<ScoreDistribution value="3" recordCount="0.0"/>
+						</Node>
+						<Node>
+							<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="1.1026849746704102"/>
+							<Node score="1" recordCount="81508.0">
+								<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="1.0463955402374268"/>
+								<ScoreDistribution value="1" recordCount="79227.0"/>
+								<ScoreDistribution value="2" recordCount="0.0"/>
+								<ScoreDistribution value="3" recordCount="2281.0"/>
+							</Node>
+							<Node score="1" recordCount="23252.0">
+								<True/>
+								<ScoreDistribution value="1" recordCount="16194.0"/>
+								<ScoreDistribution value="2" recordCount="0.0"/>
+								<ScoreDistribution value="3" recordCount="7058.0"/>
+							</Node>
+						</Node>
+						<Node score="3" recordCount="482490.0">
+							<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="1.5655889511108398"/>
+							<ScoreDistribution value="1" recordCount="94408.0"/>
+							<ScoreDistribution value="2" recordCount="0.0"/>
+							<ScoreDistribution value="3" recordCount="388082.0"/>
+						</Node>
+						<Node score="1" recordCount="13006.0">
+							<True/>
+							<ScoreDistribution value="1" recordCount="10183.0"/>
+							<ScoreDistribution value="2" recordCount="0.0"/>
+							<ScoreDistribution value="3" recordCount="2823.0"/>
+						</Node>
+					</Node>
+				</TreeModel>
+			</Segment>
+			<Segment id="3">
+				<True/>
+				<TreeModel functionName="classification" missingValueStrategy="nullPrediction">
+					<MiningSchema>
+						<MiningField name="double(float(pca@1[0]))"/>
+					</MiningSchema>
+					<Node>
+						<True/>
+						<Node score="2" recordCount="600154.0">
+							<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="-0.11425848538056016"/>
+							<ScoreDistribution value="1" recordCount="0.0"/>
+							<ScoreDistribution value="2" recordCount="600154.0"/>
+							<ScoreDistribution value="3" recordCount="0.0"/>
+						</Node>
+						<Node>
+							<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="1.105273425579071"/>
+							<Node score="1" recordCount="79428.0">
+								<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="1.0395067930221558"/>
+								<ScoreDistribution value="1" recordCount="77602.0"/>
+								<ScoreDistribution value="2" recordCount="0.0"/>
+								<ScoreDistribution value="3" recordCount="1826.0"/>
+							</Node>
+							<Node score="1" recordCount="26664.0">
+								<True/>
+								<ScoreDistribution value="1" recordCount="18656.0"/>
+								<ScoreDistribution value="2" recordCount="0.0"/>
+								<ScoreDistribution value="3" recordCount="8008.0"/>
+							</Node>
+						</Node>
+						<Node score="3" recordCount="480066.0">
+							<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="1.5632707476615906"/>
+							<ScoreDistribution value="1" recordCount="93419.0"/>
+							<ScoreDistribution value="2" recordCount="0.0"/>
+							<ScoreDistribution value="3" recordCount="386647.0"/>
+						</Node>
+						<Node score="1" recordCount="13688.0">
+							<True/>
+							<ScoreDistribution value="1" recordCount="10587.0"/>
+							<ScoreDistribution value="2" recordCount="0.0"/>
+							<ScoreDistribution value="3" recordCount="3101.0"/>
+						</Node>
+					</Node>
+				</TreeModel>
+			</Segment>
+			<Segment id="4">
+				<True/>
+				<TreeModel functionName="classification" missingValueStrategy="nullPrediction">
+					<MiningSchema>
+						<MiningField name="double(float(pca@1[0]))"/>
+					</MiningSchema>
+					<Node>
+						<True/>
+						<Node score="2" recordCount="599999.0">
+							<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="-0.15407787822186947"/>
+							<ScoreDistribution value="1" recordCount="0.0"/>
+							<ScoreDistribution value="2" recordCount="599999.0"/>
+							<ScoreDistribution value="3" recordCount="0.0"/>
+						</Node>
+						<Node>
+							<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="1.1049725413322449"/>
+							<Node score="1" recordCount="82028.0">
+								<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="1.0463160276412964"/>
+								<ScoreDistribution value="1" recordCount="79827.0"/>
+								<ScoreDistribution value="2" recordCount="0.0"/>
+								<ScoreDistribution value="3" recordCount="2201.0"/>
+							</Node>
+							<Node score="1" recordCount="24162.0">
+								<True/>
+								<ScoreDistribution value="1" recordCount="16765.0"/>
+								<ScoreDistribution value="2" recordCount="0.0"/>
+								<ScoreDistribution value="3" recordCount="7397.0"/>
+							</Node>
+						</Node>
+						<Node score="3" recordCount="480012.0">
+							<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="1.5619900226593018"/>
+							<ScoreDistribution value="1" recordCount="92924.0"/>
+							<ScoreDistribution value="2" recordCount="0.0"/>
+							<ScoreDistribution value="3" recordCount="387088.0"/>
+						</Node>
+						<Node score="1" recordCount="13799.0">
+							<True/>
+							<ScoreDistribution value="1" recordCount="10609.0"/>
+							<ScoreDistribution value="2" recordCount="0.0"/>
+							<ScoreDistribution value="3" recordCount="3190.0"/>
+						</Node>
+					</Node>
+				</TreeModel>
+			</Segment>
+			<Segment id="5">
+				<True/>
+				<TreeModel functionName="classification" missingValueStrategy="nullPrediction">
+					<MiningSchema>
+						<MiningField name="double(float(pca@1[0]))"/>
+					</MiningSchema>
+					<Node>
+						<True/>
+						<Node score="2" recordCount="599156.0">
+							<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="-0.12922541075386107"/>
+							<ScoreDistribution value="1" recordCount="0.0"/>
+							<ScoreDistribution value="2" recordCount="599156.0"/>
+							<ScoreDistribution value="3" recordCount="0.0"/>
+						</Node>
+						<Node>
+							<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="1.105345368385315"/>
+							<Node score="1" recordCount="81619.0">
+								<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="1.046143651008606"/>
+								<ScoreDistribution value="1" recordCount="79408.0"/>
+								<ScoreDistribution value="2" recordCount="0.0"/>
+								<ScoreDistribution value="3" recordCount="2211.0"/>
+							</Node>
+							<Node score="1" recordCount="24635.0">
+								<True/>
+								<ScoreDistribution value="1" recordCount="16971.0"/>
+								<ScoreDistribution value="2" recordCount="0.0"/>
+								<ScoreDistribution value="3" recordCount="7664.0"/>
+							</Node>
+						</Node>
+						<Node score="3" recordCount="480035.0">
+							<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="1.5585802793502808"/>
+							<ScoreDistribution value="1" recordCount="92558.0"/>
+							<ScoreDistribution value="2" recordCount="0.0"/>
+							<ScoreDistribution value="3" recordCount="387477.0"/>
+						</Node>
+						<Node score="1" recordCount="14555.0">
+							<True/>
+							<ScoreDistribution value="1" recordCount="11116.0"/>
+							<ScoreDistribution value="2" recordCount="0.0"/>
+							<ScoreDistribution value="3" recordCount="3439.0"/>
+						</Node>
+					</Node>
+				</TreeModel>
+			</Segment>
+			<Segment id="6">
+				<True/>
+				<TreeModel functionName="classification" missingValueStrategy="nullPrediction">
+					<MiningSchema>
+						<MiningField name="double(float(pca@1[0]))"/>
+					</MiningSchema>
+					<Node>
+						<True/>
+						<Node score="2" recordCount="599920.0">
+							<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="-0.12036635796539485"/>
+							<ScoreDistribution value="1" recordCount="0.0"/>
+							<ScoreDistribution value="2" recordCount="599920.0"/>
+							<ScoreDistribution value="3" recordCount="0.0"/>
+						</Node>
+						<Node>
+							<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="1.1052221655845642"/>
+							<Node score="1" recordCount="82184.0">
+								<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="1.047136902809143"/>
+								<ScoreDistribution value="1" recordCount="79919.0"/>
+								<ScoreDistribution value="2" recordCount="0.0"/>
+								<ScoreDistribution value="3" recordCount="2265.0"/>
+							</Node>
+							<Node score="1" recordCount="24068.0">
+								<True/>
+								<ScoreDistribution value="1" recordCount="16642.0"/>
+								<ScoreDistribution value="2" recordCount="0.0"/>
+								<ScoreDistribution value="3" recordCount="7426.0"/>
+							</Node>
+						</Node>
+						<Node score="3" recordCount="480333.0">
+							<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="1.5627474784851074"/>
+							<ScoreDistribution value="1" recordCount="93102.0"/>
+							<ScoreDistribution value="2" recordCount="0.0"/>
+							<ScoreDistribution value="3" recordCount="387231.0"/>
+						</Node>
+						<Node score="1" recordCount="13495.0">
+							<True/>
+							<ScoreDistribution value="1" recordCount="10505.0"/>
+							<ScoreDistribution value="2" recordCount="0.0"/>
+							<ScoreDistribution value="3" recordCount="2990.0"/>
+						</Node>
+					</Node>
+				</TreeModel>
+			</Segment>
+			<Segment id="7">
+				<True/>
+				<TreeModel functionName="classification" missingValueStrategy="nullPrediction">
+					<MiningSchema>
+						<MiningField name="double(float(pca@1[0]))"/>
+					</MiningSchema>
+					<Node>
+						<True/>
+						<Node score="2" recordCount="600248.0">
+							<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="-0.16195503436028957"/>
+							<ScoreDistribution value="1" recordCount="0.0"/>
+							<ScoreDistribution value="2" recordCount="600248.0"/>
+							<ScoreDistribution value="3" recordCount="0.0"/>
+						</Node>
+						<Node>
+							<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="1.1124804615974426"/>
+							<Node score="1" recordCount="81716.0">
+								<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="1.047136902809143"/>
+								<ScoreDistribution value="1" recordCount="79432.0"/>
+								<ScoreDistribution value="2" recordCount="0.0"/>
+								<ScoreDistribution value="3" recordCount="2284.0"/>
+							</Node>
+							<Node score="1" recordCount="27841.0">
+								<True/>
+								<ScoreDistribution value="1" recordCount="18784.0"/>
+								<ScoreDistribution value="2" recordCount="0.0"/>
+								<ScoreDistribution value="3" recordCount="9057.0"/>
+							</Node>
+						</Node>
+						<Node score="3" recordCount="476408.0">
+							<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="1.562022864818573"/>
+							<ScoreDistribution value="1" recordCount="90651.0"/>
+							<ScoreDistribution value="2" recordCount="0.0"/>
+							<ScoreDistribution value="3" recordCount="385757.0"/>
+						</Node>
+						<Node score="1" recordCount="13787.0">
+							<True/>
+							<ScoreDistribution value="1" recordCount="10733.0"/>
+							<ScoreDistribution value="2" recordCount="0.0"/>
+							<ScoreDistribution value="3" recordCount="3054.0"/>
+						</Node>
+					</Node>
+				</TreeModel>
+			</Segment>
+			<Segment id="8">
+				<True/>
+				<TreeModel functionName="classification" missingValueStrategy="nullPrediction">
+					<MiningSchema>
+						<MiningField name="double(float(pca@1[0]))"/>
+					</MiningSchema>
+					<Node>
+						<True/>
+						<Node score="2" recordCount="599717.0">
+							<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="-0.16195503436028957"/>
+							<ScoreDistribution value="1" recordCount="0.0"/>
+							<ScoreDistribution value="2" recordCount="599717.0"/>
+							<ScoreDistribution value="3" recordCount="0.0"/>
+						</Node>
+						<Node>
+							<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="1.1100217700004578"/>
+							<Node score="1" recordCount="78877.0">
+								<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="1.0388310551643372"/>
+								<ScoreDistribution value="1" recordCount="77043.0"/>
+								<ScoreDistribution value="2" recordCount="0.0"/>
+								<ScoreDistribution value="3" recordCount="1834.0"/>
+							</Node>
+							<Node score="1" recordCount="29429.0">
+								<True/>
+								<ScoreDistribution value="1" recordCount="20520.0"/>
+								<ScoreDistribution value="2" recordCount="0.0"/>
+								<ScoreDistribution value="3" recordCount="8909.0"/>
+							</Node>
+						</Node>
+						<Node score="3" recordCount="477047.0">
+							<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="1.5545923709869385"/>
+							<ScoreDistribution value="1" recordCount="91284.0"/>
+							<ScoreDistribution value="2" recordCount="0.0"/>
+							<ScoreDistribution value="3" recordCount="385763.0"/>
+						</Node>
+						<Node score="1" recordCount="14930.0">
+							<True/>
+							<ScoreDistribution value="1" recordCount="11186.0"/>
+							<ScoreDistribution value="2" recordCount="0.0"/>
+							<ScoreDistribution value="3" recordCount="3744.0"/>
+						</Node>
+					</Node>
+				</TreeModel>
+			</Segment>
+			<Segment id="9">
+				<True/>
+				<TreeModel functionName="classification" missingValueStrategy="nullPrediction">
+					<MiningSchema>
+						<MiningField name="double(float(pca@1[0]))"/>
+					</MiningSchema>
+					<Node>
+						<True/>
+						<Node score="2" recordCount="600681.0">
+							<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="-0.1458988394588232"/>
+							<ScoreDistribution value="1" recordCount="0.0"/>
+							<ScoreDistribution value="2" recordCount="600681.0"/>
+							<ScoreDistribution value="3" recordCount="0.0"/>
+						</Node>
+						<Node>
+							<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="1.1056132316589355"/>
+							<Node score="1" recordCount="81560.0">
+								<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="1.0461407899856567"/>
+								<ScoreDistribution value="1" recordCount="79336.0"/>
+								<ScoreDistribution value="2" recordCount="0.0"/>
+								<ScoreDistribution value="3" recordCount="2224.0"/>
+							</Node>
+							<Node score="1" recordCount="24594.0">
+								<True/>
+								<ScoreDistribution value="1" recordCount="17045.0"/>
+								<ScoreDistribution value="2" recordCount="0.0"/>
+								<ScoreDistribution value="3" recordCount="7549.0"/>
+							</Node>
+						</Node>
+						<Node score="3" recordCount="479384.0">
+							<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="1.5619674324989319"/>
+							<ScoreDistribution value="1" recordCount="92853.0"/>
+							<ScoreDistribution value="2" recordCount="0.0"/>
+							<ScoreDistribution value="3" recordCount="386531.0"/>
+						</Node>
+						<Node score="1" recordCount="13781.0">
+							<True/>
+							<ScoreDistribution value="1" recordCount="10616.0"/>
+							<ScoreDistribution value="2" recordCount="0.0"/>
+							<ScoreDistribution value="3" recordCount="3165.0"/>
+						</Node>
+					</Node>
+				</TreeModel>
+			</Segment>
+			<Segment id="10">
+				<True/>
+				<TreeModel functionName="classification" missingValueStrategy="nullPrediction">
+					<MiningSchema>
+						<MiningField name="double(float(pca@1[0]))"/>
+					</MiningSchema>
+					<Node>
+						<True/>
+						<Node score="2" recordCount="599326.0">
+							<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="-0.16195503436028957"/>
+							<ScoreDistribution value="1" recordCount="0.0"/>
+							<ScoreDistribution value="2" recordCount="599326.0"/>
+							<ScoreDistribution value="3" recordCount="0.0"/>
+						</Node>
+						<Node>
+							<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="1.1050491333007812"/>
+							<Node score="1" recordCount="81724.0">
+								<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="1.0463743209838867"/>
+								<ScoreDistribution value="1" recordCount="79509.0"/>
+								<ScoreDistribution value="2" recordCount="0.0"/>
+								<ScoreDistribution value="3" recordCount="2215.0"/>
+							</Node>
+							<Node score="1" recordCount="24291.0">
+								<True/>
+								<ScoreDistribution value="1" recordCount="16872.0"/>
+								<ScoreDistribution value="2" recordCount="0.0"/>
+								<ScoreDistribution value="3" recordCount="7419.0"/>
+							</Node>
+						</Node>
+						<Node score="3" recordCount="481344.0">
+							<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="1.565605878829956"/>
+							<ScoreDistribution value="1" recordCount="93629.0"/>
+							<ScoreDistribution value="2" recordCount="0.0"/>
+							<ScoreDistribution value="3" recordCount="387715.0"/>
+						</Node>
+						<Node score="1" recordCount="13315.0">
+							<True/>
+							<ScoreDistribution value="1" recordCount="10473.0"/>
+							<ScoreDistribution value="2" recordCount="0.0"/>
+							<ScoreDistribution value="3" recordCount="2842.0"/>
+						</Node>
+					</Node>
+				</TreeModel>
+			</Segment>
+			<Segment id="11">
+				<True/>
+				<TreeModel functionName="classification" missingValueStrategy="nullPrediction">
+					<MiningSchema>
+						<MiningField name="double(float(pca@1[0]))"/>
+					</MiningSchema>
+					<Node>
+						<True/>
+						<Node score="2" recordCount="599645.0">
+							<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="-0.1458988394588232"/>
+							<ScoreDistribution value="1" recordCount="0.0"/>
+							<ScoreDistribution value="2" recordCount="599645.0"/>
+							<ScoreDistribution value="3" recordCount="0.0"/>
+						</Node>
+						<Node>
+							<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="1.1067323088645935"/>
+							<Node score="1" recordCount="81636.0">
+								<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="1.045636534690857"/>
+								<ScoreDistribution value="1" recordCount="79493.0"/>
+								<ScoreDistribution value="2" recordCount="0.0"/>
+								<ScoreDistribution value="3" recordCount="2143.0"/>
+							</Node>
+							<Node score="1" recordCount="25634.0">
+								<True/>
+								<ScoreDistribution value="1" recordCount="17664.0"/>
+								<ScoreDistribution value="2" recordCount="0.0"/>
+								<ScoreDistribution value="3" recordCount="7970.0"/>
+							</Node>
+						</Node>
+						<Node score="3" recordCount="479721.0">
+							<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="1.5632984638214111"/>
+							<ScoreDistribution value="1" recordCount="92174.0"/>
+							<ScoreDistribution value="2" recordCount="0.0"/>
+							<ScoreDistribution value="3" recordCount="387547.0"/>
+						</Node>
+						<Node score="1" recordCount="13364.0">
+							<True/>
+							<ScoreDistribution value="1" recordCount="10376.0"/>
+							<ScoreDistribution value="2" recordCount="0.0"/>
+							<ScoreDistribution value="3" recordCount="2988.0"/>
+						</Node>
+					</Node>
+				</TreeModel>
+			</Segment>
+			<Segment id="12">
+				<True/>
+				<TreeModel functionName="classification" missingValueStrategy="nullPrediction">
+					<MiningSchema>
+						<MiningField name="double(float(pca@1[0]))"/>
+					</MiningSchema>
+					<Node>
+						<True/>
+						<Node score="2" recordCount="600342.0">
+							<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="-0.15407787822186947"/>
+							<ScoreDistribution value="1" recordCount="0.0"/>
+							<ScoreDistribution value="2" recordCount="600342.0"/>
+							<ScoreDistribution value="3" recordCount="0.0"/>
+						</Node>
+						<Node>
+							<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="1.105346918106079"/>
+							<Node score="1" recordCount="81706.0">
+								<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="1.047010898590088"/>
+								<ScoreDistribution value="1" recordCount="79450.0"/>
+								<ScoreDistribution value="2" recordCount="0.0"/>
+								<ScoreDistribution value="3" recordCount="2256.0"/>
+							</Node>
+							<Node score="1" recordCount="24350.0">
+								<True/>
+								<ScoreDistribution value="1" recordCount="16688.0"/>
+								<ScoreDistribution value="2" recordCount="0.0"/>
+								<ScoreDistribution value="3" recordCount="7662.0"/>
+							</Node>
+						</Node>
+						<Node score="3" recordCount="479973.0">
+							<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="1.5630728006362915"/>
+							<ScoreDistribution value="1" recordCount="93071.0"/>
+							<ScoreDistribution value="2" recordCount="0.0"/>
+							<ScoreDistribution value="3" recordCount="386902.0"/>
+						</Node>
+						<Node score="1" recordCount="13629.0">
+							<True/>
+							<ScoreDistribution value="1" recordCount="10646.0"/>
+							<ScoreDistribution value="2" recordCount="0.0"/>
+							<ScoreDistribution value="3" recordCount="2983.0"/>
+						</Node>
+					</Node>
+				</TreeModel>
+			</Segment>
+			<Segment id="13">
+				<True/>
+				<TreeModel functionName="classification" missingValueStrategy="nullPrediction">
+					<MiningSchema>
+						<MiningField name="double(float(pca@1[0]))"/>
+					</MiningSchema>
+					<Node>
+						<True/>
+						<Node score="2" recordCount="599569.0">
+							<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="-0.1458988394588232"/>
+							<ScoreDistribution value="1" recordCount="0.0"/>
+							<ScoreDistribution value="2" recordCount="599569.0"/>
+							<ScoreDistribution value="3" recordCount="0.0"/>
+						</Node>
+						<Node>
+							<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="1.1050446033477783"/>
+							<Node score="1" recordCount="81830.0">
+								<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="1.0471388101577759"/>
+								<ScoreDistribution value="1" recordCount="79556.0"/>
+								<ScoreDistribution value="2" recordCount="0.0"/>
+								<ScoreDistribution value="3" recordCount="2274.0"/>
+							</Node>
+							<Node score="1" recordCount="24105.0">
+								<True/>
+								<ScoreDistribution value="1" recordCount="16687.0"/>
+								<ScoreDistribution value="2" recordCount="0.0"/>
+								<ScoreDistribution value="3" recordCount="7418.0"/>
+							</Node>
+						</Node>
+						<Node score="3" recordCount="480897.0">
+							<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="1.5623513460159302"/>
+							<ScoreDistribution value="1" recordCount="93124.0"/>
+							<ScoreDistribution value="2" recordCount="0.0"/>
+							<ScoreDistribution value="3" recordCount="387773.0"/>
+						</Node>
+						<Node score="1" recordCount="13599.0">
+							<True/>
+							<ScoreDistribution value="1" recordCount="10485.0"/>
+							<ScoreDistribution value="2" recordCount="0.0"/>
+							<ScoreDistribution value="3" recordCount="3114.0"/>
+						</Node>
+					</Node>
+				</TreeModel>
+			</Segment>
+			<Segment id="14">
+				<True/>
+				<TreeModel functionName="classification" missingValueStrategy="nullPrediction">
+					<MiningSchema>
+						<MiningField name="double(float(pca@1[0]))"/>
+					</MiningSchema>
+					<Node>
+						<True/>
+						<Node score="2" recordCount="601110.0">
+							<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="-0.1458988394588232"/>
+							<ScoreDistribution value="1" recordCount="0.0"/>
+							<ScoreDistribution value="2" recordCount="601110.0"/>
+							<ScoreDistribution value="3" recordCount="0.0"/>
+						</Node>
+						<Node>
+							<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="1.1057288646697998"/>
+							<Node score="1" recordCount="81915.0">
+								<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="1.0471564531326294"/>
+								<ScoreDistribution value="1" recordCount="79621.0"/>
+								<ScoreDistribution value="2" recordCount="0.0"/>
+								<ScoreDistribution value="3" recordCount="2294.0"/>
+							</Node>
+							<Node score="1" recordCount="24229.0">
+								<True/>
+								<ScoreDistribution value="1" recordCount="16675.0"/>
+								<ScoreDistribution value="2" recordCount="0.0"/>
+								<ScoreDistribution value="3" recordCount="7554.0"/>
+							</Node>
+						</Node>
+						<Node score="3" recordCount="479226.0">
+							<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="1.5642407536506653"/>
+							<ScoreDistribution value="1" recordCount="92707.0"/>
+							<ScoreDistribution value="2" recordCount="0.0"/>
+							<ScoreDistribution value="3" recordCount="386519.0"/>
+						</Node>
+						<Node score="1" recordCount="13520.0">
+							<True/>
+							<ScoreDistribution value="1" recordCount="10621.0"/>
+							<ScoreDistribution value="2" recordCount="0.0"/>
+							<ScoreDistribution value="3" recordCount="2899.0"/>
+						</Node>
+					</Node>
+				</TreeModel>
+			</Segment>
+			<Segment id="15">
+				<True/>
+				<TreeModel functionName="classification" missingValueStrategy="nullPrediction">
+					<MiningSchema>
+						<MiningField name="double(float(pca@1[0]))"/>
+					</MiningSchema>
+					<Node>
+						<True/>
+						<Node score="2" recordCount="600360.0">
+							<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="-0.1210463719908148"/>
+							<ScoreDistribution value="1" recordCount="0.0"/>
+							<ScoreDistribution value="2" recordCount="600360.0"/>
+							<ScoreDistribution value="3" recordCount="0.0"/>
+						</Node>
+						<Node>
+							<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="1.1104871034622192"/>
+							<Node score="1" recordCount="81817.0">
+								<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="1.046143651008606"/>
+								<ScoreDistribution value="1" recordCount="79657.0"/>
+								<ScoreDistribution value="2" recordCount="0.0"/>
+								<ScoreDistribution value="3" recordCount="2160.0"/>
+							</Node>
+							<Node score="1" recordCount="27236.0">
+								<True/>
+								<ScoreDistribution value="1" recordCount="18467.0"/>
+								<ScoreDistribution value="2" recordCount="0.0"/>
+								<ScoreDistribution value="3" recordCount="8769.0"/>
+							</Node>
+						</Node>
+						<Node score="3" recordCount="475511.0">
+							<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="1.553506076335907"/>
+							<ScoreDistribution value="1" recordCount="90412.0"/>
+							<ScoreDistribution value="2" recordCount="0.0"/>
+							<ScoreDistribution value="3" recordCount="385099.0"/>
+						</Node>
+						<Node score="1" recordCount="15076.0">
+							<True/>
+							<ScoreDistribution value="1" recordCount="11244.0"/>
+							<ScoreDistribution value="2" recordCount="0.0"/>
+							<ScoreDistribution value="3" recordCount="3832.0"/>
+						</Node>
+					</Node>
+				</TreeModel>
+			</Segment>
+			<Segment id="16">
+				<True/>
+				<TreeModel functionName="classification" missingValueStrategy="nullPrediction">
+					<MiningSchema>
+						<MiningField name="double(float(pca@1[0]))"/>
+					</MiningSchema>
+					<Node>
+						<True/>
+						<Node score="2" recordCount="600133.0">
+							<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="-0.16349833272397518"/>
+							<ScoreDistribution value="1" recordCount="0.0"/>
+							<ScoreDistribution value="2" recordCount="600133.0"/>
+							<ScoreDistribution value="3" recordCount="0.0"/>
+						</Node>
+						<Node>
+							<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="1.105346918106079"/>
+							<Node score="1" recordCount="76712.0">
+								<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="1.0315077900886536"/>
+								<ScoreDistribution value="1" recordCount="75249.0"/>
+								<ScoreDistribution value="2" recordCount="0.0"/>
+								<ScoreDistribution value="3" recordCount="1463.0"/>
+							</Node>
+							<Node score="1" recordCount="29113.0">
+								<True/>
+								<ScoreDistribution value="1" recordCount="20859.0"/>
+								<ScoreDistribution value="2" recordCount="0.0"/>
+								<ScoreDistribution value="3" recordCount="8254.0"/>
+							</Node>
+						</Node>
+						<Node score="3" recordCount="480877.0">
+							<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="1.5644214153289795"/>
+							<ScoreDistribution value="1" recordCount="93023.0"/>
+							<ScoreDistribution value="2" recordCount="0.0"/>
+							<ScoreDistribution value="3" recordCount="387854.0"/>
+						</Node>
+						<Node score="1" recordCount="13165.0">
+							<True/>
+							<ScoreDistribution value="1" recordCount="10280.0"/>
+							<ScoreDistribution value="2" recordCount="0.0"/>
+							<ScoreDistribution value="3" recordCount="2885.0"/>
+						</Node>
+					</Node>
+				</TreeModel>
+			</Segment>
+			<Segment id="17">
+				<True/>
+				<TreeModel functionName="classification" missingValueStrategy="nullPrediction">
+					<MiningSchema>
+						<MiningField name="double(float(pca@1[0]))"/>
+					</MiningSchema>
+					<Node>
+						<True/>
+						<Node score="2" recordCount="599612.0">
+							<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="-0.1458988394588232"/>
+							<ScoreDistribution value="1" recordCount="0.0"/>
+							<ScoreDistribution value="2" recordCount="599612.0"/>
+							<ScoreDistribution value="3" recordCount="0.0"/>
+						</Node>
+						<Node>
+							<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="1.1052764058113098"/>
+							<Node score="1" recordCount="81497.0">
+								<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="1.045795202255249"/>
+								<ScoreDistribution value="1" recordCount="79341.0"/>
+								<ScoreDistribution value="2" recordCount="0.0"/>
+								<ScoreDistribution value="3" recordCount="2156.0"/>
+							</Node>
+							<Node score="1" recordCount="24850.0">
+								<True/>
+								<ScoreDistribution value="1" recordCount="17263.0"/>
+								<ScoreDistribution value="2" recordCount="0.0"/>
+								<ScoreDistribution value="3" recordCount="7587.0"/>
+							</Node>
+						</Node>
+						<Node score="3" recordCount="479574.0">
+							<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="1.5583887100219727"/>
+							<ScoreDistribution value="1" recordCount="93144.0"/>
+							<ScoreDistribution value="2" recordCount="0.0"/>
+							<ScoreDistribution value="3" recordCount="386430.0"/>
+						</Node>
+						<Node score="1" recordCount="14467.0">
+							<True/>
+							<ScoreDistribution value="1" recordCount="11034.0"/>
+							<ScoreDistribution value="2" recordCount="0.0"/>
+							<ScoreDistribution value="3" recordCount="3433.0"/>
+						</Node>
+					</Node>
+				</TreeModel>
+			</Segment>
+			<Segment id="18">
+				<True/>
+				<TreeModel functionName="classification" missingValueStrategy="nullPrediction">
+					<MiningSchema>
+						<MiningField name="double(float(pca@1[0]))"/>
+					</MiningSchema>
+					<Node>
+						<True/>
+						<Node score="2" recordCount="599307.0">
+							<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="-0.13710256689228117"/>
+							<ScoreDistribution value="1" recordCount="0.0"/>
+							<ScoreDistribution value="2" recordCount="599307.0"/>
+							<ScoreDistribution value="3" recordCount="0.0"/>
+						</Node>
+						<Node>
+							<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="1.1028292179107666"/>
+							<Node score="1" recordCount="79652.0">
+								<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="1.0396595001220703"/>
+								<ScoreDistribution value="1" recordCount="77794.0"/>
+								<ScoreDistribution value="2" recordCount="0.0"/>
+								<ScoreDistribution value="3" recordCount="1858.0"/>
+							</Node>
+							<Node score="1" recordCount="25674.0">
+								<True/>
+								<ScoreDistribution value="1" recordCount="18014.0"/>
+								<ScoreDistribution value="2" recordCount="0.0"/>
+								<ScoreDistribution value="3" recordCount="7660.0"/>
+							</Node>
+						</Node>
+						<Node score="3" recordCount="481638.0">
+							<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="1.5623513460159302"/>
+							<ScoreDistribution value="1" recordCount="93849.0"/>
+							<ScoreDistribution value="2" recordCount="0.0"/>
+							<ScoreDistribution value="3" recordCount="387789.0"/>
+						</Node>
+						<Node score="1" recordCount="13729.0">
+							<True/>
+							<ScoreDistribution value="1" recordCount="10672.0"/>
+							<ScoreDistribution value="2" recordCount="0.0"/>
+							<ScoreDistribution value="3" recordCount="3057.0"/>
+						</Node>
+					</Node>
+				</TreeModel>
+			</Segment>
+			<Segment id="19">
+				<True/>
+				<TreeModel functionName="classification" missingValueStrategy="nullPrediction">
+					<MiningSchema>
+						<MiningField name="double(float(pca@1[0]))"/>
+					</MiningSchema>
+					<Node>
+						<True/>
+						<Node score="2" recordCount="598387.0">
+							<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="-0.16195503436028957"/>
+							<ScoreDistribution value="1" recordCount="0.0"/>
+							<ScoreDistribution value="2" recordCount="598387.0"/>
+							<ScoreDistribution value="3" recordCount="0.0"/>
+						</Node>
+						<Node>
+							<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="1.1067891120910645"/>
+							<Node score="1" recordCount="80126.0">
+								<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="1.0406458377838135"/>
+								<ScoreDistribution value="1" recordCount="78153.0"/>
+								<ScoreDistribution value="2" recordCount="0.0"/>
+								<ScoreDistribution value="3" recordCount="1973.0"/>
+							</Node>
+							<Node score="1" recordCount="27237.0">
+								<True/>
+								<ScoreDistribution value="1" recordCount="19141.0"/>
+								<ScoreDistribution value="2" recordCount="0.0"/>
+								<ScoreDistribution value="3" recordCount="8096.0"/>
+							</Node>
+						</Node>
+						<Node score="3" recordCount="481261.0">
+							<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="1.5666337609291077"/>
+							<ScoreDistribution value="1" recordCount="92925.0"/>
+							<ScoreDistribution value="2" recordCount="0.0"/>
+							<ScoreDistribution value="3" recordCount="388336.0"/>
+						</Node>
+						<Node score="1" recordCount="12989.0">
+							<True/>
+							<ScoreDistribution value="1" recordCount="10158.0"/>
+							<ScoreDistribution value="2" recordCount="0.0"/>
+							<ScoreDistribution value="3" recordCount="2831.0"/>
+						</Node>
+					</Node>
+				</TreeModel>
+			</Segment>
+			<Segment id="20">
+				<True/>
+				<TreeModel functionName="classification" missingValueStrategy="nullPrediction">
+					<MiningSchema>
+						<MiningField name="double(float(pca@1[0]))"/>
+					</MiningSchema>
+					<Node>
+						<True/>
+						<Node score="2" recordCount="599981.0">
+							<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="-0.12036635796539485"/>
+							<ScoreDistribution value="1" recordCount="0.0"/>
+							<ScoreDistribution value="2" recordCount="599981.0"/>
+							<ScoreDistribution value="3" recordCount="0.0"/>
+						</Node>
+						<Node>
+							<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="1.1040496826171875"/>
+							<Node score="1" recordCount="78293.0">
+								<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="1.0357292890548706"/>
+								<ScoreDistribution value="1" recordCount="76618.0"/>
+								<ScoreDistribution value="2" recordCount="0.0"/>
+								<ScoreDistribution value="3" recordCount="1675.0"/>
+							</Node>
+							<Node score="1" recordCount="27476.0">
+								<True/>
+								<ScoreDistribution value="1" recordCount="19735.0"/>
+								<ScoreDistribution value="2" recordCount="0.0"/>
+								<ScoreDistribution value="3" recordCount="7741.0"/>
+							</Node>
+						</Node>
+						<Node score="3" recordCount="480277.0">
+							<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="1.560879409313202"/>
+							<ScoreDistribution value="1" recordCount="93325.0"/>
+							<ScoreDistribution value="2" recordCount="0.0"/>
+							<ScoreDistribution value="3" recordCount="386952.0"/>
+						</Node>
+						<Node score="1" recordCount="13973.0">
+							<True/>
+							<ScoreDistribution value="1" recordCount="10768.0"/>
+							<ScoreDistribution value="2" recordCount="0.0"/>
+							<ScoreDistribution value="3" recordCount="3205.0"/>
+						</Node>
+					</Node>
+				</TreeModel>
+			</Segment>
+			<Segment id="21">
+				<True/>
+				<TreeModel functionName="classification" missingValueStrategy="nullPrediction">
+					<MiningSchema>
+						<MiningField name="double(float(pca@1[0]))"/>
+					</MiningSchema>
+					<Node>
+						<True/>
+						<Node score="2" recordCount="598483.0">
+							<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="-0.12036635796539485"/>
+							<ScoreDistribution value="1" recordCount="0.0"/>
+							<ScoreDistribution value="2" recordCount="598483.0"/>
+							<ScoreDistribution value="3" recordCount="0.0"/>
+						</Node>
+						<Node>
+							<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="1.1067885756492615"/>
+							<Node score="1" recordCount="82382.0">
+								<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="1.047136902809143"/>
+								<ScoreDistribution value="1" recordCount="80119.0"/>
+								<ScoreDistribution value="2" recordCount="0.0"/>
+								<ScoreDistribution value="3" recordCount="2263.0"/>
+							</Node>
+							<Node score="1" recordCount="24914.0">
+								<True/>
+								<ScoreDistribution value="1" recordCount="16963.0"/>
+								<ScoreDistribution value="2" recordCount="0.0"/>
+								<ScoreDistribution value="3" recordCount="7951.0"/>
+							</Node>
+						</Node>
+						<Node score="3" recordCount="480404.0">
+							<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="1.5620039105415344"/>
+							<ScoreDistribution value="1" recordCount="92594.0"/>
+							<ScoreDistribution value="2" recordCount="0.0"/>
+							<ScoreDistribution value="3" recordCount="387810.0"/>
+						</Node>
+						<Node score="1" recordCount="13817.0">
+							<True/>
+							<ScoreDistribution value="1" recordCount="10661.0"/>
+							<ScoreDistribution value="2" recordCount="0.0"/>
+							<ScoreDistribution value="3" recordCount="3156.0"/>
+						</Node>
+					</Node>
+				</TreeModel>
+			</Segment>
+			<Segment id="22">
+				<True/>
+				<TreeModel functionName="classification" missingValueStrategy="nullPrediction">
+					<MiningSchema>
+						<MiningField name="double(float(pca@1[0]))"/>
+					</MiningSchema>
+					<Node>
+						<True/>
+						<Node score="2" recordCount="599805.0">
+							<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="-0.1210463719908148"/>
+							<ScoreDistribution value="1" recordCount="0.0"/>
+							<ScoreDistribution value="2" recordCount="599805.0"/>
+							<ScoreDistribution value="3" recordCount="0.0"/>
+						</Node>
+						<Node>
+							<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="1.1071962118148804"/>
+							<Node score="1" recordCount="82001.0">
+								<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="1.046143651008606"/>
+								<ScoreDistribution value="1" recordCount="79813.0"/>
+								<ScoreDistribution value="2" recordCount="0.0"/>
+								<ScoreDistribution value="3" recordCount="2188.0"/>
+							</Node>
+							<Node score="1" recordCount="25670.0">
+								<True/>
+								<ScoreDistribution value="1" recordCount="17617.0"/>
+								<ScoreDistribution value="2" recordCount="0.0"/>
+								<ScoreDistribution value="3" recordCount="8053.0"/>
+							</Node>
+						</Node>
+						<Node score="3" recordCount="478367.0">
+							<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="1.5590834021568298"/>
+							<ScoreDistribution value="1" recordCount="91695.0"/>
+							<ScoreDistribution value="2" recordCount="0.0"/>
+							<ScoreDistribution value="3" recordCount="386672.0"/>
+						</Node>
+						<Node score="1" recordCount="14157.0">
+							<True/>
+							<ScoreDistribution value="1" recordCount="10786.0"/>
+							<ScoreDistribution value="2" recordCount="0.0"/>
+							<ScoreDistribution value="3" recordCount="3371.0"/>
+						</Node>
+					</Node>
+				</TreeModel>
+			</Segment>
+			<Segment id="23">
+				<True/>
+				<TreeModel functionName="classification" missingValueStrategy="nullPrediction">
+					<MiningSchema>
+						<MiningField name="double(float(pca@1[0]))"/>
+					</MiningSchema>
+					<Node>
+						<True/>
+						<Node score="2" recordCount="599835.0">
+							<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="-0.16349833272397518"/>
+							<ScoreDistribution value="1" recordCount="0.0"/>
+							<ScoreDistribution value="2" recordCount="599835.0"/>
+							<ScoreDistribution value="3" recordCount="0.0"/>
+						</Node>
+						<Node>
+							<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="1.1049878597259521"/>
+							<Node score="1" recordCount="81993.0">
+								<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="1.0463903546333313"/>
+								<ScoreDistribution value="1" recordCount="79678.0"/>
+								<ScoreDistribution value="2" recordCount="0.0"/>
+								<ScoreDistribution value="3" recordCount="2315.0"/>
+							</Node>
+							<Node score="1" recordCount="24131.0">
+								<True/>
+								<ScoreDistribution value="1" recordCount="16722.0"/>
+								<ScoreDistribution value="2" recordCount="0.0"/>
+								<ScoreDistribution value="3" recordCount="7409.0"/>
+							</Node>
+						</Node>
+						<Node score="3" recordCount="479790.0">
+							<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="1.558817207813263"/>
+							<ScoreDistribution value="1" recordCount="92970.0"/>
+							<ScoreDistribution value="2" recordCount="0.0"/>
+							<ScoreDistribution value="3" recordCount="386820.0"/>
+						</Node>
+						<Node score="1" recordCount="14251.0">
+							<True/>
+							<ScoreDistribution value="1" recordCount="10785.0"/>
+							<ScoreDistribution value="2" recordCount="0.0"/>
+							<ScoreDistribution value="3" recordCount="3466.0"/>
+						</Node>
+					</Node>
+				</TreeModel>
+			</Segment>
+			<Segment id="24">
+				<True/>
+				<TreeModel functionName="classification" missingValueStrategy="nullPrediction">
+					<MiningSchema>
+						<MiningField name="double(float(pca@1[0]))"/>
+					</MiningSchema>
+					<Node>
+						<True/>
+						<Node score="2" recordCount="599216.0">
+							<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="-0.1458988394588232"/>
+							<ScoreDistribution value="1" recordCount="0.0"/>
+							<ScoreDistribution value="2" recordCount="599216.0"/>
+							<ScoreDistribution value="3" recordCount="0.0"/>
+						</Node>
+						<Node>
+							<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="1.1057190895080566"/>
+							<Node score="1" recordCount="79783.0">
+								<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="1.0396369099617004"/>
+								<ScoreDistribution value="1" recordCount="77909.0"/>
+								<ScoreDistribution value="2" recordCount="0.0"/>
+								<ScoreDistribution value="3" recordCount="1874.0"/>
+							</Node>
+							<Node score="1" recordCount="27051.0">
+								<True/>
+								<ScoreDistribution value="1" recordCount="19126.0"/>
+								<ScoreDistribution value="2" recordCount="0.0"/>
+								<ScoreDistribution value="3" recordCount="7925.0"/>
+							</Node>
+						</Node>
+						<Node score="3" recordCount="480191.0">
+							<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="1.5620039105415344"/>
+							<ScoreDistribution value="1" recordCount="92968.0"/>
+							<ScoreDistribution value="2" recordCount="0.0"/>
+							<ScoreDistribution value="3" recordCount="387223.0"/>
+						</Node>
+						<Node score="1" recordCount="13759.0">
+							<True/>
+							<ScoreDistribution value="1" recordCount="10596.0"/>
+							<ScoreDistribution value="2" recordCount="0.0"/>
+							<ScoreDistribution value="3" recordCount="3163.0"/>
+						</Node>
+					</Node>
+				</TreeModel>
+			</Segment>
+			<Segment id="25">
+				<True/>
+				<TreeModel functionName="classification" missingValueStrategy="nullPrediction">
+					<MiningSchema>
+						<MiningField name="double(float(pca@1[0]))"/>
+					</MiningSchema>
+					<Node>
+						<True/>
+						<Node score="2" recordCount="600157.0">
+							<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="-0.1458988394588232"/>
+							<ScoreDistribution value="1" recordCount="0.0"/>
+							<ScoreDistribution value="2" recordCount="600157.0"/>
+							<ScoreDistribution value="3" recordCount="0.0"/>
+						</Node>
+						<Node>
+							<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="1.1067283153533936"/>
+							<Node score="1" recordCount="78912.0">
+								<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="1.0386822819709778"/>
+								<ScoreDistribution value="1" recordCount="77119.0"/>
+								<ScoreDistribution value="2" recordCount="0.0"/>
+								<ScoreDistribution value="3" recordCount="1793.0"/>
+							</Node>
+							<Node score="1" recordCount="27641.0">
+								<True/>
+								<ScoreDistribution value="1" recordCount="19426.0"/>
+								<ScoreDistribution value="2" recordCount="0.0"/>
+								<ScoreDistribution value="3" recordCount="8215.0"/>
+							</Node>
+						</Node>
+						<Node score="3" recordCount="479772.0">
+							<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="1.5632780194282532"/>
+							<ScoreDistribution value="1" recordCount="92782.0"/>
+							<ScoreDistribution value="2" recordCount="0.0"/>
+							<ScoreDistribution value="3" recordCount="386990.0"/>
+						</Node>
+						<Node score="1" recordCount="13518.0">
+							<True/>
+							<ScoreDistribution value="1" recordCount="10561.0"/>
+							<ScoreDistribution value="2" recordCount="0.0"/>
+							<ScoreDistribution value="3" recordCount="2957.0"/>
+						</Node>
+					</Node>
+				</TreeModel>
+			</Segment>
+			<Segment id="26">
+				<True/>
+				<TreeModel functionName="classification" missingValueStrategy="nullPrediction">
+					<MiningSchema>
+						<MiningField name="double(float(pca@1[0]))"/>
+					</MiningSchema>
+					<Node>
+						<True/>
+						<Node score="2" recordCount="599302.0">
+							<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="-0.11579570826143026"/>
+							<ScoreDistribution value="1" recordCount="0.0"/>
+							<ScoreDistribution value="2" recordCount="599302.0"/>
+							<ScoreDistribution value="3" recordCount="0.0"/>
+						</Node>
+						<Node>
+							<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="1.1053420305252075"/>
+							<Node score="1" recordCount="81856.0">
+								<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="1.046143651008606"/>
+								<ScoreDistribution value="1" recordCount="79684.0"/>
+								<ScoreDistribution value="2" recordCount="0.0"/>
+								<ScoreDistribution value="3" recordCount="2172.0"/>
+							</Node>
+							<Node score="1" recordCount="24440.0">
+								<True/>
+								<ScoreDistribution value="1" recordCount="16846.0"/>
+								<ScoreDistribution value="2" recordCount="0.0"/>
+								<ScoreDistribution value="3" recordCount="7594.0"/>
+							</Node>
+						</Node>
+						<Node score="3" recordCount="480624.0">
+							<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="1.561969816684723"/>
+							<ScoreDistribution value="1" recordCount="92983.0"/>
+							<ScoreDistribution value="2" recordCount="0.0"/>
+							<ScoreDistribution value="3" recordCount="387641.0"/>
+						</Node>
+						<Node score="1" recordCount="13778.0">
+							<True/>
+							<ScoreDistribution value="1" recordCount="10680.0"/>
+							<ScoreDistribution value="2" recordCount="0.0"/>
+							<ScoreDistribution value="3" recordCount="3098.0"/>
+						</Node>
+					</Node>
+				</TreeModel>
+			</Segment>
+			<Segment id="27">
+				<True/>
+				<TreeModel functionName="classification" missingValueStrategy="nullPrediction">
+					<MiningSchema>
+						<MiningField name="double(float(pca@1[0]))"/>
+					</MiningSchema>
+					<Node>
+						<True/>
+						<Node score="2" recordCount="599828.0">
+							<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="-0.16195503436028957"/>
+							<ScoreDistribution value="1" recordCount="0.0"/>
+							<ScoreDistribution value="2" recordCount="599828.0"/>
+							<ScoreDistribution value="3" recordCount="0.0"/>
+						</Node>
+						<Node>
+							<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="1.105225920677185"/>
+							<Node score="1" recordCount="82101.0">
+								<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="1.0468761920928955"/>
+								<ScoreDistribution value="1" recordCount="79869.0"/>
+								<ScoreDistribution value="2" recordCount="0.0"/>
+								<ScoreDistribution value="3" recordCount="2232.0"/>
+							</Node>
+							<Node score="1" recordCount="24342.0">
+								<True/>
+								<ScoreDistribution value="1" recordCount="16844.0"/>
+								<ScoreDistribution value="2" recordCount="0.0"/>
+								<ScoreDistribution value="3" recordCount="7498.0"/>
+							</Node>
+						</Node>
+						<Node score="3" recordCount="480624.0">
+							<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="1.5644198656082153"/>
+							<ScoreDistribution value="1" recordCount="93128.0"/>
+							<ScoreDistribution value="2" recordCount="0.0"/>
+							<ScoreDistribution value="3" recordCount="387496.0"/>
+						</Node>
+						<Node score="1" recordCount="13105.0">
+							<True/>
+							<ScoreDistribution value="1" recordCount="10265.0"/>
+							<ScoreDistribution value="2" recordCount="0.0"/>
+							<ScoreDistribution value="3" recordCount="2840.0"/>
+						</Node>
+					</Node>
+				</TreeModel>
+			</Segment>
+			<Segment id="28">
+				<True/>
+				<TreeModel functionName="classification" missingValueStrategy="nullPrediction">
+					<MiningSchema>
+						<MiningField name="double(float(pca@1[0]))"/>
+					</MiningSchema>
+					<Node>
+						<True/>
+						<Node score="2" recordCount="599491.0">
+							<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="-0.15407787822186947"/>
+							<ScoreDistribution value="1" recordCount="0.0"/>
+							<ScoreDistribution value="2" recordCount="599491.0"/>
+							<ScoreDistribution value="3" recordCount="0.0"/>
+						</Node>
+						<Node>
+							<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="1.1052209734916687"/>
+							<Node score="1" recordCount="82078.0">
+								<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="1.046143651008606"/>
+								<ScoreDistribution value="1" recordCount="79790.0"/>
+								<ScoreDistribution value="2" recordCount="0.0"/>
+								<ScoreDistribution value="3" recordCount="2288.0"/>
+							</Node>
+							<Node score="1" recordCount="24580.0">
+								<True/>
+								<ScoreDistribution value="1" recordCount="17064.0"/>
+								<ScoreDistribution value="2" recordCount="0.0"/>
+								<ScoreDistribution value="3" recordCount="7516.0"/>
+							</Node>
+						</Node>
+						<Node score="3" recordCount="480450.0">
+							<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="1.5642407536506653"/>
+							<ScoreDistribution value="1" recordCount="93228.0"/>
+							<ScoreDistribution value="2" recordCount="0.0"/>
+							<ScoreDistribution value="3" recordCount="387222.0"/>
+						</Node>
+						<Node score="1" recordCount="13401.0">
+							<True/>
+							<ScoreDistribution value="1" recordCount="10442.0"/>
+							<ScoreDistribution value="2" recordCount="0.0"/>
+							<ScoreDistribution value="3" recordCount="2959.0"/>
+						</Node>
+					</Node>
+				</TreeModel>
+			</Segment>
+			<Segment id="29">
+				<True/>
+				<TreeModel functionName="classification" missingValueStrategy="nullPrediction">
+					<MiningSchema>
+						<MiningField name="double(float(pca@1[0]))"/>
+					</MiningSchema>
+					<Node>
+						<True/>
+						<Node score="2" recordCount="599094.0">
+							<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="-0.1458988394588232"/>
+							<ScoreDistribution value="1" recordCount="0.0"/>
+							<ScoreDistribution value="2" recordCount="599094.0"/>
+							<ScoreDistribution value="3" recordCount="0.0"/>
+						</Node>
+						<Node>
+							<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="1.1057206988334656"/>
+							<Node score="1" recordCount="81063.0">
+								<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="1.0447587966918945"/>
+								<ScoreDistribution value="1" recordCount="78880.0"/>
+								<ScoreDistribution value="2" recordCount="0.0"/>
+								<ScoreDistribution value="3" recordCount="2183.0"/>
+							</Node>
+							<Node score="1" recordCount="25316.0">
+								<True/>
+								<ScoreDistribution value="1" recordCount="17629.0"/>
+								<ScoreDistribution value="2" recordCount="0.0"/>
+								<ScoreDistribution value="3" recordCount="7687.0"/>
+							</Node>
+						</Node>
+						<Node score="3" recordCount="480277.0">
+							<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="1.5585802793502808"/>
+							<ScoreDistribution value="1" recordCount="92737.0"/>
+							<ScoreDistribution value="2" recordCount="0.0"/>
+							<ScoreDistribution value="3" recordCount="387540.0"/>
+						</Node>
+						<Node score="1" recordCount="14250.0">
+							<True/>
+							<ScoreDistribution value="1" recordCount="10889.0"/>
+							<ScoreDistribution value="2" recordCount="0.0"/>
+							<ScoreDistribution value="3" recordCount="3361.0"/>
+						</Node>
+					</Node>
+				</TreeModel>
+			</Segment>
+			<Segment id="30">
+				<True/>
+				<TreeModel functionName="classification" missingValueStrategy="nullPrediction">
+					<MiningSchema>
+						<MiningField name="double(float(pca@1[0]))"/>
+					</MiningSchema>
+					<Node>
+						<True/>
+						<Node score="2" recordCount="598612.0">
+							<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="-0.1458988394588232"/>
+							<ScoreDistribution value="1" recordCount="0.0"/>
+							<ScoreDistribution value="2" recordCount="598612.0"/>
+							<ScoreDistribution value="3" recordCount="0.0"/>
+						</Node>
+						<Node>
+							<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="1.1041457056999207"/>
+							<Node score="1" recordCount="78623.0">
+								<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="1.036129653453827"/>
+								<ScoreDistribution value="1" recordCount="76911.0"/>
+								<ScoreDistribution value="2" recordCount="0.0"/>
+								<ScoreDistribution value="3" recordCount="1712.0"/>
+							</Node>
+							<Node score="1" recordCount="27654.0">
+								<True/>
+								<ScoreDistribution value="1" recordCount="19806.0"/>
+								<ScoreDistribution value="2" recordCount="0.0"/>
+								<ScoreDistribution value="3" recordCount="7848.0"/>
+							</Node>
+						</Node>
+						<Node score="3" recordCount="481435.0">
+							<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="1.5631197690963745"/>
+							<ScoreDistribution value="1" recordCount="94111.0"/>
+							<ScoreDistribution value="2" recordCount="0.0"/>
+							<ScoreDistribution value="3" recordCount="387324.0"/>
+						</Node>
+						<Node score="1" recordCount="13676.0">
+							<True/>
+							<ScoreDistribution value="1" recordCount="10644.0"/>
+							<ScoreDistribution value="2" recordCount="0.0"/>
+							<ScoreDistribution value="3" recordCount="3032.0"/>
+						</Node>
+					</Node>
+				</TreeModel>
+			</Segment>
+			<Segment id="31">
+				<True/>
+				<TreeModel functionName="classification" missingValueStrategy="nullPrediction">
+					<MiningSchema>
+						<MiningField name="double(float(pca@1[0]))"/>
+					</MiningSchema>
+					<Node>
+						<True/>
+						<Node score="2" recordCount="600246.0">
+							<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="-0.15407787822186947"/>
+							<ScoreDistribution value="1" recordCount="0.0"/>
+							<ScoreDistribution value="2" recordCount="600246.0"/>
+							<ScoreDistribution value="3" recordCount="0.0"/>
+						</Node>
+						<Node>
+							<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="1.105273425579071"/>
+							<Node score="1" recordCount="76904.0">
+								<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="1.0305266976356506"/>
+								<ScoreDistribution value="1" recordCount="75471.0"/>
+								<ScoreDistribution value="2" recordCount="0.0"/>
+								<ScoreDistribution value="3" recordCount="1433.0"/>
+							</Node>
+							<Node score="1" recordCount="29701.0">
+								<True/>
+								<ScoreDistribution value="1" recordCount="21352.0"/>
+								<ScoreDistribution value="2" recordCount="0.0"/>
+								<ScoreDistribution value="3" recordCount="8349.0"/>
+							</Node>
+						</Node>
+						<Node score="3" recordCount="478277.0">
+							<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="1.5544279217720032"/>
+							<ScoreDistribution value="1" recordCount="92503.0"/>
+							<ScoreDistribution value="2" recordCount="0.0"/>
+							<ScoreDistribution value="3" recordCount="385774.0"/>
+						</Node>
+						<Node score="1" recordCount="14872.0">
+							<True/>
+							<ScoreDistribution value="1" recordCount="11009.0"/>
+							<ScoreDistribution value="2" recordCount="0.0"/>
+							<ScoreDistribution value="3" recordCount="3863.0"/>
+						</Node>
+					</Node>
+				</TreeModel>
+			</Segment>
+			<Segment id="32">
+				<True/>
+				<TreeModel functionName="classification" missingValueStrategy="nullPrediction">
+					<MiningSchema>
+						<MiningField name="double(float(pca@1[0]))"/>
+					</MiningSchema>
+					<Node>
+						<True/>
+						<Node score="2" recordCount="599846.0">
+							<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="-0.1458988394588232"/>
+							<ScoreDistribution value="1" recordCount="0.0"/>
+							<ScoreDistribution value="2" recordCount="599846.0"/>
+							<ScoreDistribution value="3" recordCount="0.0"/>
+						</Node>
+						<Node>
+							<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="1.1052764058113098"/>
+							<Node score="1" recordCount="81938.0">
+								<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="1.046961486339569"/>
+								<ScoreDistribution value="1" recordCount="79574.0"/>
+								<ScoreDistribution value="2" recordCount="0.0"/>
+								<ScoreDistribution value="3" recordCount="2364.0"/>
+							</Node>
+							<Node score="1" recordCount="24192.0">
+								<True/>
+								<ScoreDistribution value="1" recordCount="16617.0"/>
+								<ScoreDistribution value="2" recordCount="0.0"/>
+								<ScoreDistribution value="3" recordCount="7575.0"/>
+							</Node>
+						</Node>
+						<Node score="3" recordCount="480508.0">
+							<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="1.5632780194282532"/>
+							<ScoreDistribution value="1" recordCount="93288.0"/>
+							<ScoreDistribution value="2" recordCount="0.0"/>
+							<ScoreDistribution value="3" recordCount="387220.0"/>
+						</Node>
+						<Node score="1" recordCount="13516.0">
+							<True/>
+							<ScoreDistribution value="1" recordCount="10545.0"/>
+							<ScoreDistribution value="2" recordCount="0.0"/>
+							<ScoreDistribution value="3" recordCount="2971.0"/>
+						</Node>
+					</Node>
+				</TreeModel>
+			</Segment>
+			<Segment id="33">
+				<True/>
+				<TreeModel functionName="classification" missingValueStrategy="nullPrediction">
+					<MiningSchema>
+						<MiningField name="double(float(pca@1[0]))"/>
+					</MiningSchema>
+					<Node>
+						<True/>
+						<Node score="2" recordCount="600082.0">
+							<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="-0.1458988394588232"/>
+							<ScoreDistribution value="1" recordCount="0.0"/>
+							<ScoreDistribution value="2" recordCount="600082.0"/>
+							<ScoreDistribution value="3" recordCount="0.0"/>
+						</Node>
+						<Node>
+							<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="1.113441288471222"/>
+							<Node score="1" recordCount="81908.0">
+								<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="1.046143651008606"/>
+								<ScoreDistribution value="1" recordCount="79622.0"/>
+								<ScoreDistribution value="2" recordCount="0.0"/>
+								<ScoreDistribution value="3" recordCount="2286.0"/>
+							</Node>
+							<Node score="1" recordCount="28766.0">
+								<True/>
+								<ScoreDistribution value="1" recordCount="19291.0"/>
+								<ScoreDistribution value="2" recordCount="0.0"/>
+								<ScoreDistribution value="3" recordCount="9475.0"/>
+							</Node>
+						</Node>
+						<Node score="3" recordCount="476292.0">
+							<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="1.5666486024856567"/>
+							<ScoreDistribution value="1" recordCount="91044.0"/>
+							<ScoreDistribution value="2" recordCount="0.0"/>
+							<ScoreDistribution value="3" recordCount="385248.0"/>
+						</Node>
+						<Node score="1" recordCount="12952.0">
+							<True/>
+							<ScoreDistribution value="1" recordCount="10209.0"/>
+							<ScoreDistribution value="2" recordCount="0.0"/>
+							<ScoreDistribution value="3" recordCount="2743.0"/>
+						</Node>
+					</Node>
+				</TreeModel>
+			</Segment>
+			<Segment id="34">
+				<True/>
+				<TreeModel functionName="classification" missingValueStrategy="nullPrediction">
+					<MiningSchema>
+						<MiningField name="double(float(pca@1[0]))"/>
+					</MiningSchema>
+					<Node>
+						<True/>
+						<Node score="2" recordCount="600534.0">
+							<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="-0.15407787822186947"/>
+							<ScoreDistribution value="1" recordCount="0.0"/>
+							<ScoreDistribution value="2" recordCount="600534.0"/>
+							<ScoreDistribution value="3" recordCount="0.0"/>
+						</Node>
+						<Node>
+							<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="1.105718970298767"/>
+							<Node score="1" recordCount="81366.0">
+								<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="1.046142339706421"/>
+								<ScoreDistribution value="1" recordCount="79208.0"/>
+								<ScoreDistribution value="2" recordCount="0.0"/>
+								<ScoreDistribution value="3" recordCount="2158.0"/>
+							</Node>
+							<Node score="1" recordCount="24528.0">
+								<True/>
+								<ScoreDistribution value="1" recordCount="16970.0"/>
+								<ScoreDistribution value="2" recordCount="0.0"/>
+								<ScoreDistribution value="3" recordCount="7558.0"/>
+							</Node>
+						</Node>
+						<Node score="3" recordCount="480334.0">
+							<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="1.5657766461372375"/>
+							<ScoreDistribution value="1" recordCount="93055.0"/>
+							<ScoreDistribution value="2" recordCount="0.0"/>
+							<ScoreDistribution value="3" recordCount="387279.0"/>
+						</Node>
+						<Node score="1" recordCount="13238.0">
+							<True/>
+							<ScoreDistribution value="1" recordCount="10428.0"/>
+							<ScoreDistribution value="2" recordCount="0.0"/>
+							<ScoreDistribution value="3" recordCount="2810.0"/>
+						</Node>
+					</Node>
+				</TreeModel>
+			</Segment>
+			<Segment id="35">
+				<True/>
+				<TreeModel functionName="classification" missingValueStrategy="nullPrediction">
+					<MiningSchema>
+						<MiningField name="double(float(pca@1[0]))"/>
+					</MiningSchema>
+					<Node>
+						<True/>
+						<Node score="2" recordCount="600603.0">
+							<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="-0.12036635796539485"/>
+							<ScoreDistribution value="1" recordCount="0.0"/>
+							<ScoreDistribution value="2" recordCount="600603.0"/>
+							<ScoreDistribution value="3" recordCount="0.0"/>
+						</Node>
+						<Node>
+							<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="1.1057206988334656"/>
+							<Node score="1" recordCount="81903.0">
+								<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="1.0472344160079956"/>
+								<ScoreDistribution value="1" recordCount="79668.0"/>
+								<ScoreDistribution value="2" recordCount="0.0"/>
+								<ScoreDistribution value="3" recordCount="2235.0"/>
+							</Node>
+							<Node score="1" recordCount="24409.0">
+								<True/>
+								<ScoreDistribution value="1" recordCount="16800.0"/>
+								<ScoreDistribution value="2" recordCount="0.0"/>
+								<ScoreDistribution value="3" recordCount="7609.0"/>
+							</Node>
+						</Node>
+						<Node score="3" recordCount="479308.0">
+							<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="1.5619674324989319"/>
+							<ScoreDistribution value="1" recordCount="92422.0"/>
+							<ScoreDistribution value="2" recordCount="0.0"/>
+							<ScoreDistribution value="3" recordCount="386886.0"/>
+						</Node>
+						<Node score="1" recordCount="13777.0">
+							<True/>
+							<ScoreDistribution value="1" recordCount="10601.0"/>
+							<ScoreDistribution value="2" recordCount="0.0"/>
+							<ScoreDistribution value="3" recordCount="3176.0"/>
+						</Node>
+					</Node>
+				</TreeModel>
+			</Segment>
+			<Segment id="36">
+				<True/>
+				<TreeModel functionName="classification" missingValueStrategy="nullPrediction">
+					<MiningSchema>
+						<MiningField name="double(float(pca@1[0]))"/>
+					</MiningSchema>
+					<Node>
+						<True/>
+						<Node score="2" recordCount="599887.0">
+							<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="-0.1210463719908148"/>
+							<ScoreDistribution value="1" recordCount="0.0"/>
+							<ScoreDistribution value="2" recordCount="599887.0"/>
+							<ScoreDistribution value="3" recordCount="0.0"/>
+						</Node>
+						<Node>
+							<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="1.1052764058113098"/>
+							<Node score="1" recordCount="82354.0">
+								<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="1.047136902809143"/>
+								<ScoreDistribution value="1" recordCount="80107.0"/>
+								<ScoreDistribution value="2" recordCount="0.0"/>
+								<ScoreDistribution value="3" recordCount="2247.0"/>
+							</Node>
+							<Node score="1" recordCount="24335.0">
+								<True/>
+								<ScoreDistribution value="1" recordCount="16814.0"/>
+								<ScoreDistribution value="2" recordCount="0.0"/>
+								<ScoreDistribution value="3" recordCount="7521.0"/>
+							</Node>
+						</Node>
+						<Node score="3" recordCount="479754.0">
+							<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="1.5619674324989319"/>
+							<ScoreDistribution value="1" recordCount="93105.0"/>
+							<ScoreDistribution value="2" recordCount="0.0"/>
+							<ScoreDistribution value="3" recordCount="386649.0"/>
+						</Node>
+						<Node score="1" recordCount="13670.0">
+							<True/>
+							<ScoreDistribution value="1" recordCount="10536.0"/>
+							<ScoreDistribution value="2" recordCount="0.0"/>
+							<ScoreDistribution value="3" recordCount="3134.0"/>
+						</Node>
+					</Node>
+				</TreeModel>
+			</Segment>
+			<Segment id="37">
+				<True/>
+				<TreeModel functionName="classification" missingValueStrategy="nullPrediction">
+					<MiningSchema>
+						<MiningField name="double(float(pca@1[0]))"/>
+					</MiningSchema>
+					<Node>
+						<True/>
+						<Node score="2" recordCount="599707.0">
+							<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="-0.1458988394588232"/>
+							<ScoreDistribution value="1" recordCount="0.0"/>
+							<ScoreDistribution value="2" recordCount="599707.0"/>
+							<ScoreDistribution value="3" recordCount="0.0"/>
+						</Node>
+						<Node>
+							<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="1.1057083010673523"/>
+							<Node score="1" recordCount="82001.0">
+								<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="1.0470672249794006"/>
+								<ScoreDistribution value="1" recordCount="79754.0"/>
+								<ScoreDistribution value="2" recordCount="0.0"/>
+								<ScoreDistribution value="3" recordCount="2247.0"/>
+							</Node>
+							<Node score="1" recordCount="24555.0">
+								<True/>
+								<ScoreDistribution value="1" recordCount="16953.0"/>
+								<ScoreDistribution value="2" recordCount="0.0"/>
+								<ScoreDistribution value="3" recordCount="7602.0"/>
+							</Node>
+						</Node>
+						<Node score="3" recordCount="479990.0">
+							<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="1.561969816684723"/>
+							<ScoreDistribution value="1" recordCount="92732.0"/>
+							<ScoreDistribution value="2" recordCount="0.0"/>
+							<ScoreDistribution value="3" recordCount="387258.0"/>
+						</Node>
+						<Node score="1" recordCount="13747.0">
+							<True/>
+							<ScoreDistribution value="1" recordCount="10596.0"/>
+							<ScoreDistribution value="2" recordCount="0.0"/>
+							<ScoreDistribution value="3" recordCount="3151.0"/>
+						</Node>
+					</Node>
+				</TreeModel>
+			</Segment>
+			<Segment id="38">
+				<True/>
+				<TreeModel functionName="classification" missingValueStrategy="nullPrediction">
+					<MiningSchema>
+						<MiningField name="double(float(pca@1[0]))"/>
+					</MiningSchema>
+					<Node>
+						<True/>
+						<Node score="2" recordCount="600508.0">
+							<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="-0.15407787822186947"/>
+							<ScoreDistribution value="1" recordCount="0.0"/>
+							<ScoreDistribution value="2" recordCount="600508.0"/>
+							<ScoreDistribution value="3" recordCount="0.0"/>
+						</Node>
+						<Node>
+							<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="1.1052209734916687"/>
+							<Node score="1" recordCount="81913.0">
+								<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="1.0475149154663086"/>
+								<ScoreDistribution value="1" recordCount="79598.0"/>
+								<ScoreDistribution value="2" recordCount="0.0"/>
+								<ScoreDistribution value="3" recordCount="2315.0"/>
+							</Node>
+							<Node score="1" recordCount="24202.0">
+								<True/>
+								<ScoreDistribution value="1" recordCount="16625.0"/>
+								<ScoreDistribution value="2" recordCount="0.0"/>
+								<ScoreDistribution value="3" recordCount="7577.0"/>
+							</Node>
+						</Node>
+						<Node score="3" recordCount="479554.0">
+							<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="1.5619689226150513"/>
+							<ScoreDistribution value="1" recordCount="93188.0"/>
+							<ScoreDistribution value="2" recordCount="0.0"/>
+							<ScoreDistribution value="3" recordCount="386366.0"/>
+						</Node>
+						<Node score="1" recordCount="13823.0">
+							<True/>
+							<ScoreDistribution value="1" recordCount="10602.0"/>
+							<ScoreDistribution value="2" recordCount="0.0"/>
+							<ScoreDistribution value="3" recordCount="3221.0"/>
+						</Node>
+					</Node>
+				</TreeModel>
+			</Segment>
+			<Segment id="39">
+				<True/>
+				<TreeModel functionName="classification" missingValueStrategy="nullPrediction">
+					<MiningSchema>
+						<MiningField name="double(float(pca@1[0]))"/>
+					</MiningSchema>
+					<Node>
+						<True/>
+						<Node score="2" recordCount="599247.0">
+							<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="-0.12854539672844112"/>
+							<ScoreDistribution value="1" recordCount="0.0"/>
+							<ScoreDistribution value="2" recordCount="599247.0"/>
+							<ScoreDistribution value="3" recordCount="0.0"/>
+						</Node>
+						<Node>
+							<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="1.10673987865448"/>
+							<Node score="1" recordCount="81824.0">
+								<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="1.0461443662643433"/>
+								<ScoreDistribution value="1" recordCount="79689.0"/>
+								<ScoreDistribution value="2" recordCount="0.0"/>
+								<ScoreDistribution value="3" recordCount="2135.0"/>
+							</Node>
+							<Node score="1" recordCount="25366.0">
+								<True/>
+								<ScoreDistribution value="1" recordCount="17514.0"/>
+								<ScoreDistribution value="2" recordCount="0.0"/>
+								<ScoreDistribution value="3" recordCount="7852.0"/>
+							</Node>
+						</Node>
+						<Node score="3" recordCount="479887.0">
+							<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="1.5619674324989319"/>
+							<ScoreDistribution value="1" recordCount="93041.0"/>
+							<ScoreDistribution value="2" recordCount="0.0"/>
+							<ScoreDistribution value="3" recordCount="386846.0"/>
+						</Node>
+						<Node score="1" recordCount="13676.0">
+							<True/>
+							<ScoreDistribution value="1" recordCount="10649.0"/>
+							<ScoreDistribution value="2" recordCount="0.0"/>
+							<ScoreDistribution value="3" recordCount="3027.0"/>
+						</Node>
+					</Node>
+				</TreeModel>
+			</Segment>
+			<Segment id="40">
+				<True/>
+				<TreeModel functionName="classification" missingValueStrategy="nullPrediction">
+					<MiningSchema>
+						<MiningField name="double(float(pca@1[0]))"/>
+					</MiningSchema>
+					<Node>
+						<True/>
+						<Node score="2" recordCount="599685.0">
+							<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="-0.1458988394588232"/>
+							<ScoreDistribution value="1" recordCount="0.0"/>
+							<ScoreDistribution value="2" recordCount="599685.0"/>
+							<ScoreDistribution value="3" recordCount="0.0"/>
+						</Node>
+						<Node>
+							<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="1.105718970298767"/>
+							<Node score="1" recordCount="81788.0">
+								<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="1.0460755825042725"/>
+								<ScoreDistribution value="1" recordCount="79549.0"/>
+								<ScoreDistribution value="2" recordCount="0.0"/>
+								<ScoreDistribution value="3" recordCount="2239.0"/>
+							</Node>
+							<Node score="1" recordCount="24893.0">
+								<True/>
+								<ScoreDistribution value="1" recordCount="17108.0"/>
+								<ScoreDistribution value="2" recordCount="0.0"/>
+								<ScoreDistribution value="3" recordCount="7785.0"/>
+							</Node>
+						</Node>
+						<Node score="3" recordCount="480853.0">
+							<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="1.5671326518058777"/>
+							<ScoreDistribution value="1" recordCount="93398.0"/>
+							<ScoreDistribution value="2" recordCount="0.0"/>
+							<ScoreDistribution value="3" recordCount="387455.0"/>
+						</Node>
+						<Node score="1" recordCount="12781.0">
+							<True/>
+							<ScoreDistribution value="1" recordCount="10173.0"/>
+							<ScoreDistribution value="2" recordCount="0.0"/>
+							<ScoreDistribution value="3" recordCount="2608.0"/>
+						</Node>
+					</Node>
+				</TreeModel>
+			</Segment>
+			<Segment id="41">
+				<True/>
+				<TreeModel functionName="classification" missingValueStrategy="nullPrediction">
+					<MiningSchema>
+						<MiningField name="double(float(pca@1[0]))"/>
+					</MiningSchema>
+					<Node>
+						<True/>
+						<Node score="2" recordCount="599398.0">
+							<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="-0.1210463719908148"/>
+							<ScoreDistribution value="1" recordCount="0.0"/>
+							<ScoreDistribution value="2" recordCount="599398.0"/>
+							<ScoreDistribution value="3" recordCount="0.0"/>
+						</Node>
+						<Node>
+							<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="1.1067323088645935"/>
+							<Node score="1" recordCount="79060.0">
+								<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="1.0388310551643372"/>
+								<ScoreDistribution value="1" recordCount="77227.0"/>
+								<ScoreDistribution value="2" recordCount="0.0"/>
+								<ScoreDistribution value="3" recordCount="1833.0"/>
+							</Node>
+							<Node score="1" recordCount="27953.0">
+								<True/>
+								<ScoreDistribution value="1" recordCount="19594.0"/>
+								<ScoreDistribution value="2" recordCount="0.0"/>
+								<ScoreDistribution value="3" recordCount="8359.0"/>
+							</Node>
+						</Node>
+						<Node score="3" recordCount="480094.0">
+							<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="1.5633023977279663"/>
+							<ScoreDistribution value="1" recordCount="92943.0"/>
+							<ScoreDistribution value="2" recordCount="0.0"/>
+							<ScoreDistribution value="3" recordCount="387151.0"/>
+						</Node>
+						<Node score="1" recordCount="13495.0">
+							<True/>
+							<ScoreDistribution value="1" recordCount="10472.0"/>
+							<ScoreDistribution value="2" recordCount="0.0"/>
+							<ScoreDistribution value="3" recordCount="3023.0"/>
+						</Node>
+					</Node>
+				</TreeModel>
+			</Segment>
+			<Segment id="42">
+				<True/>
+				<TreeModel functionName="classification" missingValueStrategy="nullPrediction">
+					<MiningSchema>
+						<MiningField name="double(float(pca@1[0]))"/>
+					</MiningSchema>
+					<Node>
+						<True/>
+						<Node score="2" recordCount="600216.0">
+							<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="-0.15407787822186947"/>
+							<ScoreDistribution value="1" recordCount="0.0"/>
+							<ScoreDistribution value="2" recordCount="600216.0"/>
+							<ScoreDistribution value="3" recordCount="0.0"/>
+						</Node>
+						<Node>
+							<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="1.105050265789032"/>
+							<Node score="1" recordCount="79116.0">
+								<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="1.038687527179718"/>
+								<ScoreDistribution value="1" recordCount="77328.0"/>
+								<ScoreDistribution value="2" recordCount="0.0"/>
+								<ScoreDistribution value="3" recordCount="1788.0"/>
+							</Node>
+							<Node score="1" recordCount="26964.0">
+								<True/>
+								<ScoreDistribution value="1" recordCount="19032.0"/>
+								<ScoreDistribution value="2" recordCount="0.0"/>
+								<ScoreDistribution value="3" recordCount="7932.0"/>
+							</Node>
+						</Node>
+						<Node score="3" recordCount="479904.0">
+							<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="1.5619901418685913"/>
+							<ScoreDistribution value="1" recordCount="92998.0"/>
+							<ScoreDistribution value="2" recordCount="0.0"/>
+							<ScoreDistribution value="3" recordCount="386906.0"/>
+						</Node>
+						<Node score="1" recordCount="13800.0">
+							<True/>
+							<ScoreDistribution value="1" recordCount="10712.0"/>
+							<ScoreDistribution value="2" recordCount="0.0"/>
+							<ScoreDistribution value="3" recordCount="3088.0"/>
+						</Node>
+					</Node>
+				</TreeModel>
+			</Segment>
+			<Segment id="43">
+				<True/>
+				<TreeModel functionName="classification" missingValueStrategy="nullPrediction">
+					<MiningSchema>
+						<MiningField name="double(float(pca@1[0]))"/>
+					</MiningSchema>
+					<Node>
+						<True/>
+						<Node score="2" recordCount="599779.0">
+							<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="-0.12922541075386107"/>
+							<ScoreDistribution value="1" recordCount="0.0"/>
+							<ScoreDistribution value="2" recordCount="599779.0"/>
+							<ScoreDistribution value="3" recordCount="0.0"/>
+						</Node>
+						<Node>
+							<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="1.1053764820098877"/>
+							<Node score="1" recordCount="81378.0">
+								<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="1.0459923148155212"/>
+								<ScoreDistribution value="1" recordCount="79157.0"/>
+								<ScoreDistribution value="2" recordCount="0.0"/>
+								<ScoreDistribution value="3" recordCount="2221.0"/>
+							</Node>
+							<Node score="1" recordCount="24456.0">
+								<True/>
+								<ScoreDistribution value="1" recordCount="16927.0"/>
+								<ScoreDistribution value="2" recordCount="0.0"/>
+								<ScoreDistribution value="3" recordCount="7529.0"/>
+							</Node>
+						</Node>
+						<Node score="3" recordCount="480625.0">
+							<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="1.5619900226593018"/>
+							<ScoreDistribution value="1" recordCount="92951.0"/>
+							<ScoreDistribution value="2" recordCount="0.0"/>
+							<ScoreDistribution value="3" recordCount="387674.0"/>
+						</Node>
+						<Node score="1" recordCount="13762.0">
+							<True/>
+							<ScoreDistribution value="1" recordCount="10652.0"/>
+							<ScoreDistribution value="2" recordCount="0.0"/>
+							<ScoreDistribution value="3" recordCount="3110.0"/>
+						</Node>
+					</Node>
+				</TreeModel>
+			</Segment>
+			<Segment id="44">
+				<True/>
+				<TreeModel functionName="classification" missingValueStrategy="nullPrediction">
+					<MiningSchema>
+						<MiningField name="double(float(pca@1[0]))"/>
+					</MiningSchema>
+					<Node>
+						<True/>
+						<Node score="2" recordCount="600406.0">
+							<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="-0.15407787822186947"/>
+							<ScoreDistribution value="1" recordCount="0.0"/>
+							<ScoreDistribution value="2" recordCount="600406.0"/>
+							<ScoreDistribution value="3" recordCount="0.0"/>
+						</Node>
+						<Node>
+							<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="1.105718970298767"/>
+							<Node score="1" recordCount="82246.0">
+								<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="1.0471910238265991"/>
+								<ScoreDistribution value="1" recordCount="79956.0"/>
+								<ScoreDistribution value="2" recordCount="0.0"/>
+								<ScoreDistribution value="3" recordCount="2290.0"/>
+							</Node>
+							<Node score="1" recordCount="24673.0">
+								<True/>
+								<ScoreDistribution value="1" recordCount="17036.0"/>
+								<ScoreDistribution value="2" recordCount="0.0"/>
+								<ScoreDistribution value="3" recordCount="7637.0"/>
+							</Node>
+						</Node>
+						<Node score="3" recordCount="478829.0">
+							<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="1.5620408058166504"/>
+							<ScoreDistribution value="1" recordCount="92493.0"/>
+							<ScoreDistribution value="2" recordCount="0.0"/>
+							<ScoreDistribution value="3" recordCount="386336.0"/>
+						</Node>
+						<Node score="1" recordCount="13846.0">
+							<True/>
+							<ScoreDistribution value="1" recordCount="10649.0"/>
+							<ScoreDistribution value="2" recordCount="0.0"/>
+							<ScoreDistribution value="3" recordCount="3197.0"/>
+						</Node>
+					</Node>
+				</TreeModel>
+			</Segment>
+			<Segment id="45">
+				<True/>
+				<TreeModel functionName="classification" missingValueStrategy="nullPrediction">
+					<MiningSchema>
+						<MiningField name="double(float(pca@1[0]))"/>
+					</MiningSchema>
+					<Node>
+						<True/>
+						<Node score="2" recordCount="599570.0">
+							<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="-0.1458988394588232"/>
+							<ScoreDistribution value="1" recordCount="0.0"/>
+							<ScoreDistribution value="2" recordCount="599570.0"/>
+							<ScoreDistribution value="3" recordCount="0.0"/>
+						</Node>
+						<Node>
+							<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="1.1057206988334656"/>
+							<Node score="1" recordCount="82249.0">
+								<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="1.0479801893234253"/>
+								<ScoreDistribution value="1" recordCount="79914.0"/>
+								<ScoreDistribution value="2" recordCount="0.0"/>
+								<ScoreDistribution value="3" recordCount="2335.0"/>
+							</Node>
+							<Node score="1" recordCount="24230.0">
+								<True/>
+								<ScoreDistribution value="1" recordCount="16730.0"/>
+								<ScoreDistribution value="2" recordCount="0.0"/>
+								<ScoreDistribution value="3" recordCount="7500.0"/>
+							</Node>
+						</Node>
+						<Node score="3" recordCount="478970.0">
+							<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="1.5545256733894348"/>
+							<ScoreDistribution value="1" recordCount="92481.0"/>
+							<ScoreDistribution value="2" recordCount="0.0"/>
+							<ScoreDistribution value="3" recordCount="386489.0"/>
+						</Node>
+						<Node score="1" recordCount="14981.0">
+							<True/>
+							<ScoreDistribution value="1" recordCount="11167.0"/>
+							<ScoreDistribution value="2" recordCount="0.0"/>
+							<ScoreDistribution value="3" recordCount="3814.0"/>
+						</Node>
+					</Node>
+				</TreeModel>
+			</Segment>
+			<Segment id="46">
+				<True/>
+				<TreeModel functionName="classification" missingValueStrategy="nullPrediction">
+					<MiningSchema>
+						<MiningField name="double(float(pca@1[0]))"/>
+					</MiningSchema>
+					<Node>
+						<True/>
+						<Node score="2" recordCount="599177.0">
+							<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="-0.16195503436028957"/>
+							<ScoreDistribution value="1" recordCount="0.0"/>
+							<ScoreDistribution value="2" recordCount="599177.0"/>
+							<ScoreDistribution value="3" recordCount="0.0"/>
+						</Node>
+						<Node>
+							<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="1.1057169437408447"/>
+							<Node score="1" recordCount="78268.0">
+								<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="1.0360034704208374"/>
+								<ScoreDistribution value="1" recordCount="76603.0"/>
+								<ScoreDistribution value="2" recordCount="0.0"/>
+								<ScoreDistribution value="3" recordCount="1665.0"/>
+							</Node>
+							<Node score="1" recordCount="28133.0">
+								<True/>
+								<ScoreDistribution value="1" recordCount="19866.0"/>
+								<ScoreDistribution value="2" recordCount="0.0"/>
+								<ScoreDistribution value="3" recordCount="8267.0"/>
+							</Node>
+						</Node>
+						<Node score="3" recordCount="480722.0">
+							<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="1.562657356262207"/>
+							<ScoreDistribution value="1" recordCount="93058.0"/>
+							<ScoreDistribution value="2" recordCount="0.0"/>
+							<ScoreDistribution value="3" recordCount="387664.0"/>
+						</Node>
+						<Node score="1" recordCount="13700.0">
+							<True/>
+							<ScoreDistribution value="1" recordCount="10609.0"/>
+							<ScoreDistribution value="2" recordCount="0.0"/>
+							<ScoreDistribution value="3" recordCount="3091.0"/>
+						</Node>
+					</Node>
+				</TreeModel>
+			</Segment>
+			<Segment id="47">
+				<True/>
+				<TreeModel functionName="classification" missingValueStrategy="nullPrediction">
+					<MiningSchema>
+						<MiningField name="double(float(pca@1[0]))"/>
+					</MiningSchema>
+					<Node>
+						<True/>
+						<Node score="2" recordCount="600472.0">
+							<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="-0.1458988394588232"/>
+							<ScoreDistribution value="1" recordCount="0.0"/>
+							<ScoreDistribution value="2" recordCount="600472.0"/>
+							<ScoreDistribution value="3" recordCount="0.0"/>
+						</Node>
+						<Node>
+							<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="1.106110155582428"/>
+							<Node score="1" recordCount="81559.0">
+								<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="1.046142339706421"/>
+								<ScoreDistribution value="1" recordCount="79355.0"/>
+								<ScoreDistribution value="2" recordCount="0.0"/>
+								<ScoreDistribution value="3" recordCount="2204.0"/>
+							</Node>
+							<Node score="1" recordCount="24684.0">
+								<True/>
+								<ScoreDistribution value="1" recordCount="17153.0"/>
+								<ScoreDistribution value="2" recordCount="0.0"/>
+								<ScoreDistribution value="3" recordCount="7531.0"/>
+							</Node>
+						</Node>
+						<Node score="3" recordCount="478935.0">
+							<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="1.5586441159248352"/>
+							<ScoreDistribution value="1" recordCount="92392.0"/>
+							<ScoreDistribution value="2" recordCount="0.0"/>
+							<ScoreDistribution value="3" recordCount="386543.0"/>
+						</Node>
+						<Node score="1" recordCount="14350.0">
+							<True/>
+							<ScoreDistribution value="1" recordCount="10991.0"/>
+							<ScoreDistribution value="2" recordCount="0.0"/>
+							<ScoreDistribution value="3" recordCount="3359.0"/>
+						</Node>
+					</Node>
+				</TreeModel>
+			</Segment>
+			<Segment id="48">
+				<True/>
+				<TreeModel functionName="classification" missingValueStrategy="nullPrediction">
+					<MiningSchema>
+						<MiningField name="double(float(pca@1[0]))"/>
+					</MiningSchema>
+					<Node>
+						<True/>
+						<Node score="2" recordCount="600213.0">
+							<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="-0.1210463719908148"/>
+							<ScoreDistribution value="1" recordCount="0.0"/>
+							<ScoreDistribution value="2" recordCount="600213.0"/>
+							<ScoreDistribution value="3" recordCount="0.0"/>
+						</Node>
+						<Node>
+							<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="1.1053367257118225"/>
+							<Node score="1" recordCount="81913.0">
+								<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="1.0463138818740845"/>
+								<ScoreDistribution value="1" recordCount="79802.0"/>
+								<ScoreDistribution value="2" recordCount="0.0"/>
+								<ScoreDistribution value="3" recordCount="2111.0"/>
+							</Node>
+							<Node score="1" recordCount="24378.0">
+								<True/>
+								<ScoreDistribution value="1" recordCount="16771.0"/>
+								<ScoreDistribution value="2" recordCount="0.0"/>
+								<ScoreDistribution value="3" recordCount="7607.0"/>
+							</Node>
+						</Node>
+						<Node score="3" recordCount="480208.0">
+							<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="1.5644214153289795"/>
+							<ScoreDistribution value="1" recordCount="92702.0"/>
+							<ScoreDistribution value="2" recordCount="0.0"/>
+							<ScoreDistribution value="3" recordCount="387506.0"/>
+						</Node>
+						<Node score="1" recordCount="13288.0">
+							<True/>
+							<ScoreDistribution value="1" recordCount="10322.0"/>
+							<ScoreDistribution value="2" recordCount="0.0"/>
+							<ScoreDistribution value="3" recordCount="2966.0"/>
+						</Node>
+					</Node>
+				</TreeModel>
+			</Segment>
+			<Segment id="49">
+				<True/>
+				<TreeModel functionName="classification" missingValueStrategy="nullPrediction">
+					<MiningSchema>
+						<MiningField name="double(float(pca@1[0]))"/>
+					</MiningSchema>
+					<Node>
+						<True/>
+						<Node score="2" recordCount="598697.0">
+							<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="-0.15407787822186947"/>
+							<ScoreDistribution value="1" recordCount="0.0"/>
+							<ScoreDistribution value="2" recordCount="598697.0"/>
+							<ScoreDistribution value="3" recordCount="0.0"/>
+						</Node>
+						<Node>
+							<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="1.1052918434143066"/>
+							<Node score="1" recordCount="81700.0">
+								<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="1.044742226600647"/>
+								<ScoreDistribution value="1" recordCount="79542.0"/>
+								<ScoreDistribution value="2" recordCount="0.0"/>
+								<ScoreDistribution value="3" recordCount="2158.0"/>
+							</Node>
+							<Node score="1" recordCount="25124.0">
+								<True/>
+								<ScoreDistribution value="1" recordCount="17529.0"/>
+								<ScoreDistribution value="2" recordCount="0.0"/>
+								<ScoreDistribution value="3" recordCount="7595.0"/>
+							</Node>
+						</Node>
+						<Node score="3" recordCount="481087.0">
+							<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="1.5647127628326416"/>
+							<ScoreDistribution value="1" recordCount="93060.0"/>
+							<ScoreDistribution value="2" recordCount="0.0"/>
+							<ScoreDistribution value="3" recordCount="388027.0"/>
+						</Node>
+						<Node score="1" recordCount="13392.0">
+							<True/>
+							<ScoreDistribution value="1" recordCount="10414.0"/>
+							<ScoreDistribution value="2" recordCount="0.0"/>
+							<ScoreDistribution value="3" recordCount="2978.0"/>
+						</Node>
+					</Node>
+				</TreeModel>
+			</Segment>
+			<Segment id="50">
+				<True/>
+				<TreeModel functionName="classification" missingValueStrategy="nullPrediction">
+					<MiningSchema>
+						<MiningField name="double(float(pca@1[0]))"/>
+					</MiningSchema>
+					<Node>
+						<True/>
+						<Node score="2" recordCount="599667.0">
+							<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="-0.12036635796539485"/>
+							<ScoreDistribution value="1" recordCount="0.0"/>
+							<ScoreDistribution value="2" recordCount="599667.0"/>
+							<ScoreDistribution value="3" recordCount="0.0"/>
+						</Node>
+						<Node>
+							<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="1.1029508113861084"/>
+							<Node score="1" recordCount="82327.0">
+								<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="1.047359585762024"/>
+								<ScoreDistribution value="1" recordCount="80013.0"/>
+								<ScoreDistribution value="2" recordCount="0.0"/>
+								<ScoreDistribution value="3" recordCount="2314.0"/>
+							</Node>
+							<Node score="1" recordCount="22891.0">
+								<True/>
+								<ScoreDistribution value="1" recordCount="15872.0"/>
+								<ScoreDistribution value="2" recordCount="0.0"/>
+								<ScoreDistribution value="3" recordCount="7019.0"/>
+							</Node>
+						</Node>
+						<Node score="3" recordCount="481169.0">
+							<SimplePredicate field="double(float(pca@1[0]))" operator="lessOrEqual" value="1.5620493292808533"/>
+							<ScoreDistribution value="1" recordCount="94209.0"/>
+							<ScoreDistribution value="2" recordCount="0.0"/>
+							<ScoreDistribution value="3" recordCount="386960.0"/>
+						</Node>
+						<Node score="1" recordCount="13946.0">
+							<True/>
+							<ScoreDistribution value="1" recordCount="10785.0"/>
+							<ScoreDistribution value="2" recordCount="0.0"/>
+							<ScoreDistribution value="3" recordCount="3161.0"/>
+						</Node>
+					</Node>
+				</TreeModel>
+			</Segment>
+		</Segmentation>
+	</MiningModel>
+</PMML>
